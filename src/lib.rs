@@ -9,6 +9,12 @@ use actix_web::http::StatusCode;
 use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder, Result};
 use openssl::ssl::SslFiletype;
 
+use handlers::entries;
+
+mod handlers;
+
+mod accounting;
+
 async fn index() -> Result<fs::NamedFile> {
     Ok(fs::NamedFile::open("static/index.html")?.set_status_code(StatusCode::OK))
 }
@@ -27,6 +33,7 @@ pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
             .wrap(middleware::Logger::default())
             .route("/health_check", web::get().to(health_check))
             .service(web::resource("/").route(web::get().to(index)))
+            .service(web::scope("/api").service(web::scope("/v1").service(entries::services())))
     })
     .listen_openssl(listener, ssl_builder())?
     .run();
