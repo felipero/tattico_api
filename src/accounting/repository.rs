@@ -33,7 +33,8 @@ impl Repository<Account> for AccountRepository {
         ::serde_json::to_writer(
             &File::create(DATA_FILE.to_string()).expect("Data file not found"),
             &self.accounts,
-        ).expect("Could not write to file");
+        )
+        .expect("Could not write to file");
         return true;
     }
 }

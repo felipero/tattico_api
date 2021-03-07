@@ -1,5 +1,5 @@
-use actix_web::{get, post, web, HttpResponse, Scope};
 use crate::accounting::{Account, AccountRepository, Repository};
+use actix_web::{get, post, web, HttpResponse, Scope};
 
 pub fn services() -> Scope {
     web::scope("/entries").service(index).service(create)

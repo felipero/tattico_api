@@ -1,5 +1,5 @@
 use std::env;
-use std::net::{TcpListener};
+use std::net::TcpListener;
 
 use actix_files as fs;
 use actix_tls::accept::openssl::{SslAcceptor, SslAcceptorBuilder};

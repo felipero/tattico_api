@@ -1,5 +1,5 @@
-use tattico::run;
 use std::net::TcpListener;
+use tattico::run;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

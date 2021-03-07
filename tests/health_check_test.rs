@@ -1,7 +1,7 @@
+use reqwest::Client;
 use std::fs::File;
 use std::io::Read;
-use std::net::{TcpListener, SocketAddr};
-use reqwest::Client;
+use std::net::{SocketAddr, TcpListener};
 
 #[actix_rt::test]
 async fn health_check_works() {
@@ -21,9 +21,7 @@ fn setup() -> (Client, String) {
     let address = spawn_app();
 
     let mut buf = Vec::new();
-    let _ = File::open("cert.pem")
-        .unwrap()
-        .read_to_end(&mut buf);
+    let _ = File::open("cert.pem").unwrap().read_to_end(&mut buf);
 
     let client = Client::builder()
         .add_root_certificate(reqwest::Certificate::from_pem(&buf).unwrap())
