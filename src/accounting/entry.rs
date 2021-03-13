@@ -1,5 +1,5 @@
-use rust_decimal::Decimal;
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize)]

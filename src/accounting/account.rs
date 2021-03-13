@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::accounting::Entry;
+use serde::{Deserialize, Serialize};
 
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub enum AccountType {

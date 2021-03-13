@@ -19,8 +19,7 @@ impl Repository<Account> for AccountRepository {
     fn find(&self, id: String) -> &Account {
         self.accounts
             .iter()
-            .filter(|&a| a.id == id)
-            .next()
+            .find(|&a| a.id == id)
             .expect("Could not find an account with given id.")
     }
 
@@ -35,7 +34,7 @@ impl Repository<Account> for AccountRepository {
             &self.accounts,
         )
         .expect("Could not write to file");
-        return true;
+        true
     }
 }
 
@@ -52,11 +51,9 @@ impl AccountRepository {
         let reader = BufReader::new(file);
 
         // Read the JSON contents of the file as an instance of `User`.
-        let accounts = serde_json::from_reader(reader)
-            // .expect("tem que parsear");
-            .unwrap_or(vec![]);
+        let accounts = serde_json::from_reader(reader).unwrap_or_default();
 
-        AccountRepository { accounts: accounts }
+        AccountRepository { accounts }
     }
 
     // pub fn with_accounts(&mut self, accounts: Vec<Account>) -> &mut Self {

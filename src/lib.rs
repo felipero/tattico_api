@@ -4,9 +4,9 @@ use std::net::TcpListener;
 use actix_files as fs;
 use actix_tls::accept::openssl::{SslAcceptor, SslAcceptorBuilder};
 use actix_tls::connect::ssl::openssl::SslMethod;
-use actix_web::{App, HttpResponse, HttpServer, middleware, Responder, Result, web};
 use actix_web::dev::Server;
 use actix_web::http::StatusCode;
+use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder, Result};
 use openssl::ssl::SslFiletype;
 
 mod accounting;
