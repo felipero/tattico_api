@@ -1,6 +1,5 @@
-use chrono::{DateTime, Utc};
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use crate::accounting::Entry;
 
 #[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub enum AccountType {
@@ -22,13 +21,4 @@ pub struct Account {
 pub struct Category {
     pub name: String,
     pub entries: Vec<Entry>,
-}
-
-#[derive(Hash, Eq, PartialEq, Debug, Serialize, Deserialize)]
-pub struct Entry {
-    pub value: Decimal,
-    pub description: Option<String>,
-    pub date: DateTime<Utc>,
-    pub category: String,
-    pub account_id: String,
 }

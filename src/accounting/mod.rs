@@ -1,5 +1,7 @@
-pub use self::account::{Account, AccountType, Category, Entry};
-pub use self::repository::{AccountRepository, Repository};
-
 mod account;
 mod repository;
+mod entry;
+
+pub use entry::Entry;
+pub use account::{Account, AccountType, Category};
+pub use repository::{AccountRepository, Repository};

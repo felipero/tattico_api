@@ -1,7 +1,10 @@
-use reqwest::Client;
 use std::fs::File;
 use std::io::Read;
-use std::net::{SocketAddr, TcpListener};
+use std::net::TcpListener;
+
+use reqwest::Client;
+
+mod controllers;
 
 #[actix_rt::test]
 async fn health_check_works() {
@@ -15,6 +18,21 @@ async fn health_check_works() {
 
     assert!(response.status().is_success());
     assert_eq!(Some(0), response.content_length());
+}
+
+#[actix_rt::test]
+async fn index_works() {
+    let (client, address) = setup();
+
+    let response = client
+        .get(&format!("{}/", address))
+        .send()
+        .await
+        .expect("Failed to execute request.");
+
+    assert!(response.status().is_success());
+    assert_eq!(Some(145), response.content_length());
+    assert!(response.text().await.unwrap().contains("This is tattico!"));
 }
 
 fn setup() -> (Client, String) {
