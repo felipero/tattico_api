@@ -1,5 +1,5 @@
-use actix_web::{web, guard};
 use actix_web::web::ServiceConfig;
+use actix_web::{guard, web};
 
 mod entries;
 

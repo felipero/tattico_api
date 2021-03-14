@@ -30,7 +30,7 @@ async fn request(
     path: &str,
     method: TestRequest,
 ) -> ServiceResponse<Body> {
-    let mut app = test::init_service(App::new().configure(routes_config)).await;
+    let app = test::init_service(App::new().configure(routes_config)).await;
     let req = method.uri(path).to_request();
-    test::call_service(&mut app, req).await
+    test::call_service(&app, req).await
 }
