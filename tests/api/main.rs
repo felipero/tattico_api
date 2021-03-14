@@ -1,57 +1,36 @@
-use std::fs::File;
-use std::io::Read;
-use std::net::TcpListener;
+use actix_web::body::Body;
+use actix_web::dev::ServiceResponse;
+use actix_web::test::TestRequest;
+use actix_web::web::ServiceConfig;
+use actix_web::{test, App};
 
-use reqwest::Client;
+use tattico::health_check;
 
 mod controllers;
 
 #[actix_rt::test]
 async fn health_check_works() {
-    let (client, address) = setup();
-
-    let response = client
-        .get(&format!("{}/health_check", address))
-        .send()
-        .await
-        .expect("Failed to execute request.");
-
-    assert!(response.status().is_success());
-    assert_eq!(Some(0), response.content_length());
+    let mut response = get(health_check, "/health_check").await;
+    assert_eq!(response.status(), 200);
+    let body = response.take_body();
+    let body = body.as_ref().unwrap();
+    assert_eq!(&Body::Empty, body);
 }
 
-#[actix_rt::test]
-async fn index_works() {
-    let (client, address) = setup();
-
-    let response = client
-        .get(&format!("{}/", address))
-        .send()
-        .await
-        .expect("Failed to execute request.");
-
-    assert!(response.status().is_success());
-    assert_eq!(Some(145), response.content_length());
-    assert!(response.text().await.unwrap().contains("This is tattico!"));
+async fn get(routes_config: fn(&mut ServiceConfig), path: &str) -> ServiceResponse<Body> {
+    request(routes_config, path, test::TestRequest::get()).await
 }
 
-fn setup() -> (Client, String) {
-    let address = spawn_app();
-
-    let mut buf = Vec::new();
-    let _ = File::open("cert.pem").unwrap().read_to_end(&mut buf);
-
-    let client = Client::builder()
-        .add_root_certificate(reqwest::Certificate::from_pem(&buf).unwrap())
-        .build()
-        .unwrap();
-    (client, address)
+async fn post(routes_config: fn(&mut ServiceConfig), path: &str) -> ServiceResponse<Body> {
+    request(routes_config, path, test::TestRequest::post()).await
 }
 
-fn spawn_app() -> String {
-    let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
-    let address = listener.local_addr().unwrap();
-    let server = tattico::run(listener).expect("Failed to bind address.");
-    let _ = tokio::spawn(server);
-    format!("https://{}", address)
+async fn request(
+    routes_config: fn(&mut ServiceConfig),
+    path: &str,
+    method: TestRequest,
+) -> ServiceResponse<Body> {
+    let mut app = test::init_service(App::new().configure(routes_config)).await;
+    let req = method.uri(path).to_request();
+    test::call_service(&mut app, req).await
 }

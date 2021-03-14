@@ -10,20 +10,6 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-#      - name: Create ssl dir
-#        run: mkdir ssl
-
-      - name: Generate certificates for next step
-        uses: kofemann/action-create-certificate@v0.0.4
-        with:
-          hostcert: 'cert.pem'
-          hostkey: 'key.pem'
-          cachain: 'ca-chain.pem'
-
-      - name: Use generated certificates
-        run: |
-          openssl x509 -in cert.pem -noout -text
-
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:

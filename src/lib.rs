@@ -1,24 +1,15 @@
 use std::env;
 use std::net::TcpListener;
 
-use actix_files as fs;
 use actix_tls::accept::openssl::{SslAcceptor, SslAcceptorBuilder};
 use actix_tls::connect::ssl::openssl::SslMethod;
+use actix_web::{App, HttpResponse, HttpServer, middleware, Result, web};
 use actix_web::dev::Server;
-use actix_web::http::StatusCode;
-use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder, Result};
+use actix_web::web::ServiceConfig;
 use openssl::ssl::SslFiletype;
 
 mod accounting;
 pub mod controllers;
-
-async fn index() -> Result<fs::NamedFile> {
-    Ok(fs::NamedFile::open("static/index.html")?.set_status_code(StatusCode::OK))
-}
-
-async fn health_check() -> impl Responder {
-    HttpResponse::Ok()
-}
 
 pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     logger_setup();
@@ -28,13 +19,16 @@ pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
         App::new()
             .wrap(middleware::Logger::default())
             .configure(controllers::routes)
-            .service(web::resource("/health_check").route(web::get().to(health_check)))
-            .service(web::resource("/").route(web::get().to(index)))
+            .configure(health_check)
     })
     .listen_openssl(listener, ssl_builder())?
     .run();
 
     Ok(server)
+}
+
+pub fn health_check(cfg: &mut ServiceConfig) {
+    cfg.service(web::resource("/health_check").route(web::get().to(HttpResponse::Ok)));
 }
 
 fn logger_setup() {
